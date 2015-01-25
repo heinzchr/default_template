@@ -5,8 +5,10 @@
 // Currently supporting the following operations: 
 // .get() / .post() / .first()  / .take() / .skip() / .filter() / .orderBy() / .orderByDesc() / .count()
 //
-// By Jan Hommes 
-// Date: 14.01.2014
+// By Jan Hommes
+// Contributors:
+//  - Christoph Heinzel
+// Date: 25.01.2015
 // +++
 
 function o(res) {
@@ -23,7 +25,8 @@ function o(res) {
 		headers:[],			//a array of additional headers [{name:'headername',value:'headervalue'}]
 		username:null, 		//the basic auth username
 		password:null,		//the basic auth password
-		isAsync:true		//?
+		isAsync:true,		//?
+		openAjaxRequests:0	//a counter for all open ajax request to determine that are all ready TODO: Move this out of the config
 	};
 	
 	// +++
@@ -204,9 +207,32 @@ function oData(res,config){
 		//}
 		return(base);
 	}
+
+	// +++
+	// add a filter by defining the value and a list to compare
+	// REMARK: http://www.sitepoint.com/javascript-fast-string-concatenation/
+	// TODO: - replace expressions like ne, eq with the mathematical equivalent and add it as parameter to the function call
+	//       - replace expressions for logik like or, and, xor a.s.o with the math equivalent and add it as parameter to the function call
+	// +++
+	base.filterByList=function(value, relationalOperator, boolOperator, filterList) {
+		var l=filterList.length, i=0, filterStr='', arr=[];
+		if(l>0&&value!==''){
+			var relOp=translateRelationalOperator(relationalOperator);
+			var boolOp=translateBoolOperator(boolOperator);
+			if(isArray(filterList)){
+				for(i;i<l;++i){
+					arr[i] = '('+value+' '+relOp+' '+filterList[i][value]+')';
+				}
+				filterStr=arr.join(' '+boolOp+' ');
+			}
+		}
+		addQuery('$filter',checkEmpty(filterStr),filterStr);
+		return (base);
+	}
 	
 	// +++
-	// ?
+	// add a filter
+	//TODO: parse a JavaScript function to it)
 	// +++
 	base.orderBy=function(orderStr) {
 		//if(!isQueryThrowEx('$first')) {
@@ -218,23 +244,10 @@ function oData(res,config){
 	// +++
 	// ?
 	// +++
-	base.orderByDesc=function(orderStr) {
-		//if(!isQueryThrowEx('$first')) {
-			addQuery('$orderBy',checkEmpty(orderStr) + " desc");
-		//}
-		return(base);
-	}
-	
-	// +++
-	// ?
-	// +++
 	base.select=function(selectStr) {
-		//if(!isQueryThrowEx('$first')) {
-			addQuery('$select',checkEmpty(selectStr));
-		//}
+		addQuery('$select',checkEmpty(selectStr));
 		return(base);
 	}
-	
 	
 	// +++
 	// returns the first object which is found
@@ -345,6 +358,9 @@ function oData(res,config){
 		//add the resource
 		if(res)
 			addNewResource(res);
+
+		if(!resource.path[0] || !resource.path[0].get)
+			throwEx('Bulk updates are not supported. You need to query a unique resource with find() to patch/put it.');
 		
 		//set the method and data
 		resource.method='PATCH';
@@ -352,6 +368,25 @@ function oData(res,config){
 
 		return(base);
 	}	
+	
+	// +++
+	// does a delete with the given Data to the current dataset
+	// +++
+	base.delete=function(res) {
+	
+		//add the resource
+		if(res)
+			addNewResource(res);
+
+		if(!resource.path[0] || !resource.path[0].get)
+			throwEx('Bulk deletes are not supported. You need to query a unique resource with find() to delete it.');
+		
+		//set the method
+		resource.method='DELETE';
+		//resource.data=null;
+
+		return(base);
+	}
 	
 	// +++
 	// Returns the current query 
@@ -364,6 +399,50 @@ function oData(res,config){
 	
 	// ---------------------+++ INTERNALS +++----------------------------
 	
+	// +++
+	// translates js relational operators into odata syntax
+	// +++
+	function translateRelationalOperator(expression){
+		var exp='';
+		switch (expression){
+			case '==':
+				exp='eq';
+				break;
+			case '!=':
+				exp='ne';
+				break;
+			case '<':
+				exp='lt';
+				break;
+			case '<=':
+				exp='le';
+				break;
+			case '>':
+				exp='gt';
+				break;
+			case '>=':
+				exp='ge';
+				break;
+		}
+		return exp;
+	}
+
+	// +++
+	// translates js boolean operators into odata syntax
+	// +++
+	function translateBoolOperator(expression){
+		var exp='';
+		switch (expression){
+			case '&&':
+				exp='and';
+				break;
+			case '||':
+				exp='or';
+				break;
+		}
+		return exp;
+	}
+
 	// +++
 	// checks if a route exist and starts the request and adds the parameters
 	// +++
@@ -903,8 +982,10 @@ function oData(res,config){
 	// +++
 	function startAjaxReq(method,query,data,callback,isBatch,headers) {
 		//if start loading function is set call it
-		if(base.oConfig.start) 
+		if(base.oConfig.start) {
+			base.oConfig.openAjaxRequests++;
 			base.oConfig.start();
+		}
 		
 		//create a CORS ajax Request
 		var ajaxRequest=createCORSRequest(method,query);
@@ -981,8 +1062,17 @@ function oData(res,config){
 				}
 				
 				//call the basic ready method
-				if(tempBase.oConfig.ready) 
-					tempBase.oConfig.ready();
+				if(tempBase.oConfig.ready) {
+					//console.log(openAjaxRequests);
+					tempBase.oConfig.openAjaxRequests--;
+					if(tempBase.oConfig.openAjaxRequests<=0) {
+						tempBase.oConfig.ready();
+					}
+				}
+				//TODO: Add a done function to the config which is executed on every finished ajax request. Test the following:
+				/*if(tempBase.oConfig.then) {
+					tempBase.oConfig.then(tempBase);
+				}*/
 				
 			}
 		}

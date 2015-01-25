@@ -1,0 +1,252 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" data-bind="attr{content:(shop()?shop().DescriptionS:' ')}">
+    <meta name="author" content="www.pointsale.de">
+    <link rel="icon" href="../../../favicon.ico">
+
+    <title data-bind="text:{shop()?shop().Name:'ERROR'}"></title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+		<link href="css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+	<div class="container" data-bind="visible:shop()">
+
+		 <div class="header"  data-bind="css: { opacity20: isLoading()}">
+			<nav class="navbar navbar-default" data-bind="style:{'background-color':shop()?shop().FirstColor:'grey'}">
+				<div class="navbar-header">
+				  <button data-target="#navbar-collapse" data-toggle="collapse" class="navbar-toggle collapsed success" type="button">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+				  <a href="#Home" class="navbar-brand" data-bind="text:(shop()?shop().Name:' ')"></a>
+				</div>
+
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div id="navbar-collapse" class="collapse navbar-collapse">
+				  <ul class="nav navbar-nav">
+					<li role="presentation" data-bind="css: { active: route()==='Home' }" class="active"><a href="#Home">Home</a></li>
+					<li role="presentation" data-bind="css: { active: route()==='Product' }"><a data-bind="attr { href:'#Group/'+(rootGroup()?rootGroup().id:0) }" href="#">Products</a></li>
+					<li role="presentation" data-bind="css: { active: route()==='Card' }"><a href="#Card">Card <span data-bind="text:'('+shoppingCard.items().length+')',visible:shoppingCard.items().length>0"></span></a></li>
+				  </ul>
+				</div><!-- /.navbar-collapse -->
+			</nav>
+		</div>
+	  
+	  <div class="loading" data-bind="visible:isLoading()"> 
+		  <div class="jumbotron" >
+			<img src="img/ajax-loader.gif" alt="Loading ...">
+			<p>Loading ...</p>
+		  </div>
+	  </div>
+	  
+	  <div class="spacer" data-bind="css: { opacity20: isLoading()}">
+		  <div class="jumbotron" data-bind="visible:route()==='Home', style:{'background-color':$root.shop()?$root.shop().FirstColor:'grey'}">
+			<h1 data-bind="text:(shop()?shop().Name:' ')">o.js Example</h1>
+			<p class="lead" data-bind="text:(shop()?shop().DescriptionM:' ')"></p>
+			<!--<p> <a class="btn btn-lg btn-primary" href="http://www.pointsale.de" role="button">Try Pointsale</a> <a class="btn btn-lg btn-success" href="https://github.com/janhommes/o.js" role="button">Get o.js</a></p>-->
+		  </div>
+		  
+		  <!--<div class="jumbotron" data-bind="visible:route()==='Detail',with:detailProduct">
+			<h1 data-bind="text:Name">o.js Example</h1>
+			<p class="lead" data-bind="text:(Description || 'No Description')"></p>
+		  </div>-->
+		  
+		  <div class="row" data-bind="visible:route()==='Home'">
+			<!-- ko foreach: startProducts -->
+				<div class="col-md-4">
+					<div class="products" data-bind="style:{'background-color':$root.shop()?$root.shop().FirstColor:'grey'}">
+						<h4 data-bind="text:Name"></h4>
+						<div class="description" data-bind="text:(Description || 'No Description')"></div>
+						<div class="price" data-bind="currency:PriceOnline"></div>
+						<a role="button" class="btn btn-primary" data-bind="attr { href:'#Product/Detail/'+id+'/'+Name }">Details</a> 
+						<a role="button" class="btn btn-success" data-bind="click:$parent.addToCard">Add</a>
+					</div>
+				</div>
+			<!-- /ko -->
+		  </div>
+		  
+		  <!--<div class="row" data-bind="visible:route()==='Group'">-->
+			<!-- ko foreach: groups -->
+				<!--<div class="col-md-4">
+					<div class="products">
+						<a role="button" class="btn btn-primary pull-right" data-bind="attr { href:'#Product/Detail/'+id+'/'+Name }">Open</a>
+						<h4 data-bind="text:Name"></h4>
+					</div>
+				</div>-->
+			<!-- /ko -->
+		  <!--</div>-->
+		  
+		  <div class="row" data-bind="visible:route()==='Product'">
+			<div class="col-md-4">
+				<div class="list-group">
+					<!-- ko foreach: groups -->
+						<a href="#" data-bind="text:Name,attr { href:'#Group/'+id }, style:{'background-color':$root.shop()?$root.shop().SecondColor:'grey'}" class="list-group-item"></a>
+					<!-- /ko -->
+				</div>
+			</div>
+			
+			<!-- ko foreach: products -->
+				<div class="col-md-4" data-bind="with:Product">
+					<div class="products" data-bind="style:{'background-color':$root.shop()?$root.shop().FirstColor:'grey'}">
+						<h4 data-bind="text:Name"></h4>
+						<div class="description" data-bind="text:(Description || 'No Description')"></div>
+						<div class="price" data-bind="currency:PriceOnline"></div>
+						<a role="button" class="btn btn-primary" data-bind="attr { href:'#Product/Detail/'+id+'/'+Name }">Details</a>
+						<a role="button" class="btn btn-success" data-bind="click:$root.addToCard">Add</a>
+					</div>
+				</div>
+			<!-- /ko -->
+		  </div>
+		  
+		 <div class="row marketing" data-bind="visible:route()==='Product'">
+			<div class="col-md-4">
+				<a  data-bind="attr: { href: '#Product/Page/'+(skip()-9) },visible:skip()>0" class="btn btn-default" role="button">Prev</a>
+			</div>
+			<div class="col-md-4 text-center">
+				<span data-bind="text:Math.ceil((skip()/9)+1)"></span> of <span data-bind="text:Math.ceil(total()/9)"></span>
+			</div>
+			<div class="col-md-4">
+				<a data-bind="attr: { href: '#Product/Page/'+(skip()+9) },visible:(skip()+9)<total()" class="btn btn-default pull-right" role="button">Next</a>
+			</div>
+		</div>
+		
+		 <div class="row marketing" data-bind="visible:route()==='Card'">
+			<h3 data-bind="visible:shoppingCard.items().length===0">Your card is empty :(</h3>
+			<div data-bind="visible:shoppingCard.items().length>0">
+				<table class="table table-hover">
+				  <thead>
+					<tr>
+					  <th>#</th>
+					  <th>Name</th>
+					  <th></th>
+					  <th class="text-center">Amount</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<!-- ko foreach: shoppingCard.items -->
+					<tr>
+						<td style="vertical-align:middle;" data-bind="text:($index()+1)"></td>
+						<td style="vertical-align:middle;" data-bind="text:Product.Name"></td>
+						<td style="width:10%;">
+							<input class="form-control text-center" type="text" value="" data-bind="value:Amount">
+						</td>
+						<td style="vertical-align:middle;" class="text-right" data-bind="currency:Total()"></td>
+						<td style="width:20%;" class="text-right">
+							<a role="button" class="btn btn-danger" data-bind="click:Remove">x</a>
+						</td>
+					</tr>
+					<!-- /ko -->
+					<tr class="success">
+						<td colspan="4" class="text-right">
+							<strong data-bind="currency:shoppingCard.total()"></strong>
+						</td>
+						<td class="text-left">Total</td>
+					</tr>
+				  </tbody>
+				</table>
+				<a role="button" class="btn btn-success pull-right" href="#Order">Order now</a>
+			</div>
+		</div>
+	  </div>
+
+      <footer class="footer" data-bind="with:shop(),style:{'background-color':shop()?shop().FirstColor:'grey'}">
+				
+				<div class="row">
+					<div class="col-md-4 col-sm-4">
+						<h4>Willkommen</h4>
+						<hr />
+						<p data-bind="text:(WelcomeText?WelcomeText:' ')"></p>
+						<div class="social">
+							<a class="facebook" data-bind="attr: { href: FacebookURL }, visible: FacebookURL"><i class="icon-facebook"></i></a>
+							<a class="twitter" data-bind="attr: { href: TwitterURL }, visible: TwitterURL"><i class="icon-twitter"></i></a>
+							<a class="google-plus" data-bind="attr: { href: GoogleURL }, visible: GoogleURL"><i class="icon-google-plus"></i></a>
+						</div>
+					</div>
+
+					<div class="col-md-4 col-sm-4">
+						<h4>Karte</h4>
+						<hr />
+						<div id="footer-map">
+						</div>
+					</div>
+
+					<div class="col-md-4 col-sm-4" data-bind="with:$root.shopAddress">
+
+						<h4>Kontakt</h4>
+						<hr />
+						<div class="address">
+
+							<p data-bind="if:Address1">
+								<span data-bind="text:Address1"></span>
+							</p>
+							<p data-bind="if:Address2">
+								<span data-bind="text:Address2"></span>
+							</p>
+							<p data-bind="if:Address3">
+								<span data-bind="text:Address3"></span>
+							</p>
+							<p data-bind="if:PostalCode">
+								<span data-bind="text:PostalCode">, </span>
+								<span data-bind="text:City"></span>
+							</p>
+							<p data-bind="if:State">
+								<span data-bind="text:State">, </span>
+								<span data-bind="text:Country"></span>
+							</p>
+
+							<p data-bind="if:$root.shop().Phone">
+								<i class="glyphicon glyphicon-earphone"></i>
+								<span data-bind="text:$root.shop().Phone" style="padding-left:5px"></span>
+							</p>
+							<p data-bind="if: $root.shop().EmailAddress">
+								<i class="glyphicon glyphicon-envelope"></i>
+								<a data-bind=" text:$root.shop().EmailAddress, attr: { href:$root.shop().EmailAddress }" style="padding-left:5px"></a>
+							</p>
+
+						</div>	
+					</div>
+				</div>
+				<hr />
+				<div class="row">
+					<div class="col-md-4 col-sm-4 text-center">
+			      <p><span data-bind="text:(Terms?Terms:'')"></span> AGB</p>
+					</div>
+					<div class="col-md-4 col-sm-4 text-center">
+			      <p><span data-bind="text:(Disclaimer?Disclaimer:'')"></span> Impressum</p>
+					</div>
+					<div class="col-md-4 col-sm-4 text-center">
+			      <p>&copy; <span data-bind="text:(Name?Name:'')"></span> 2014</p>
+			    </div>
+		    </div>
+      </footer>
+
+    </div> <!-- /container -->
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="http://maps.googleapis.com/maps/api/js"></script>
+    <script src="js/bootstrap.min.js"></script>
+		<script src="js/q.js"></script>
+		<script src="js/o.js"></script>
+		<script src="js/knockout-3.2.0.js"></script>
+		<script src="js/ko.bindinghandler.currency.js"></script>
+		<script src="js/app.js"></script>
+  </body>
+</html>

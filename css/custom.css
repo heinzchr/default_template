@@ -1,10 +1,4 @@
-﻿/* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-/* Everything but the jumbotron gets side spacing for mobile first views */
+﻿/* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
 .footer {
@@ -12,23 +6,12 @@ body {
   padding-left: 15px;
 }
 
-/* Custom page header */
-.header {
-  border-bottom: 1px solid #e5e5e5;
-}
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
   padding-bottom: 19px;
   margin-top: 0;
   margin-bottom: 0;
   line-height: 40px;
-}
-
-/* Custom page footer */
-.footer {
-  padding-top: 19px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
 }
 
 /* Customize container */
@@ -70,7 +53,7 @@ body {
   }
   /* Space out the masthead */
   .header {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   /* Remove the bottom border on the jumbotron for visual effect */
   .jumbotron {
@@ -85,24 +68,6 @@ body {
 	color:#888;
 	text-align:right;
 }
-.products {
-	background-color:#EEE;
-	margin-bottom:20px;
-	padding:10px;
-	border-radius:5px;
-}
-.products h4 {
-	white-space: nowrap;
-	text-overflow:ellipsis;
-	overflow:hidden;
-}
-.products .description {
-	text-overflow:ellipsis;
-	overflow:hidden;
-	min-height:60px;
-	max-height:60px;
-	overflow:hidden;
-}
 
 /* Loading */
 .loading {
@@ -112,16 +77,86 @@ body {
 	z-index:1;
 	opacity:0.9;
 	padding-top:125px;
-	
 }
 .loading > div {
 	opacity:1;
 	width:250px;
 }
-.spacer {
-	min-height:500px;
+.opacity10 {
+	opacity:0.1;
 }
 .opacity20 {
-	opacity:0.2;
+  opacity:0.2;
 }
-
+.opacity60 {
+  opacity:0.6;
+}
+.thumbnail {
+  padding-top:0px;
+  margin-top:0px;
+}
+.thumbnail p {
+  height: 60px;
+  white-space: wrap;
+  overflow: hidden;
+  text-overflow-multiline: ellipsis;
+}
+.thumbnail h3 {
+  position:relative;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.thumbnail i {
+  width:100%;
+  text-align:center;
+}
+#template-product-image {
+  height:110px;
+  text-align:center;
+}
+#details-product-image {
+  height:100%;
+  width:100%;
+}
+.center-container {
+  /*position: relative;*/
+  text-align:center;
+  padding-top:50%;
+}
+/*.absolute-center {
+  margin: auto;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+}*/
+.content{
+  margin-top:0px;
+  min-height:500px;
+}
+.footer p, h4 {
+  margin-left:10px;
+}
+.highlight {
+  position: absolute;
+  top:-14px;
+  right:6px;
+}
+#nav-cart a {
+  height:100%;
+  max-height:50px;
+  width:85px;
+  margin-right:30px;
+}
+.navbar {
+  margin-top:10px;
+  margin-bottom:10px;
+}
+.footer {
+  margin-top:10px;
+  margin-bottom:10px;
+}
+.page-header {
+  margin-top:20px;
+}
+.btn-group-vertical {
+  width:100%;
+}
